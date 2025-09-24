@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心理的資本【応用力測定】診断ツール</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.7;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 40px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.05) 10px,
+                rgba(255,255,255,0.05) 20px
+            );
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .difficulty {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .intro::before {
+            content: '💡';
+            font-size: 3rem;
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            opacity: 0.3;
+        }
+
+        .intro h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .intro p {
+            margin-bottom: 15px;
+        }
+
+        .progress-container {
+            background: linear-gradient(90deg, #e3f2fd, #f3e5f5);
+            height: 12px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .question-container {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .question-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            line-height: 1.8;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 20px;
+            border: 3px solid rgba(255,255,255,0.8);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .option:hover {
+            background: rgba(255,255,255,1);
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .option input[type="radio"] {
+            margin-top: 3px;
+            transform: scale(1.3);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            border-color: #667eea;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .option-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .hint-container {
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .hint-toggle {
+            background: none;
+            border: none;
+            color: #667eea;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0;
+            text-decoration: underline;
+        }
+
+        .hint-content {
+            margin-top: 15px;
+            display: none;
+            font-style: italic;
+            color: #555;
+        }
+
+        .hint-content.show {
+            display: block;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #eee;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            color: #2c3e50;
+            box-shadow: 0 8px 20px rgba(252, 182, 159, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(252, 182, 159, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .results-container {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .results-title {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .score-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            min-width: 200px;
+        }
+
+        .score-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .score-value {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .score-subtitle {
+            opacity: 0.8;
+            font-size: 1rem;
+        }
+
+        .competency-analysis {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .competency-analysis h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .level-indicator {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .level-expert { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .level-advanced { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; }
+        .level-intermediate { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+        .level-basic { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+
+        .detailed-results {
+            margin-top: 40px;
+        }
+
+        .question-analysis {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+
+        .question-analysis.correct {
+            border-left-color: #10b981;
+        }
+
+        .question-analysis.incorrect {
+            border-left-color: #ef4444;
+        }
+
+        .question-analysis h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .rationale {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 3px solid #667eea;
+        }
+
+        .rationale h5 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 20px;
+            }
+            
+            .content {
+                padding: 25px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .score-display {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .score-card {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>心理的資本【応用力測定】</h1>
+            <p class="subtitle">Advanced PsyCap Assessment</p>
+            <div class="difficulty">🎯 Executive Level</div>
+        </div>
+
+        <div class="content">
+            <div id="intro-section">
+                <div class="intro">
+                    <h3>🚀 高度な応用力診断へようこそ</h3>
+                    <p>この診断は、実際のビジネスシーンにおける心理的資本の応用力を測定する、上級者向けのアセスメントです。</p>
+                    <p>各問題は複雑な実務状況を想定したケーススタディとなっており、理論の深い理解と実践的な応用力が求められます。</p>
+                    <p><strong>対象レベル:</strong> 管理職・リーダー・人材開発担当者・心理的資本の基礎知識を既にお持ちの方</p>
+                </div>
+                <div style="text-align: center;">
+                    <button class="btn btn-primary" onclick="startAssessment()">応用力診断を開始する</button>
+                </div>
+            </div>
+
+            <div id="assessment-section" class="hidden">
+                <div class="progress-text">
+                    問題 <span id="current-question">1</span> / 10
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+
+                <div class="question-container" id="question-container">
+                    <!-- Questions will be populated here -->
+                </div>
+
+                <div class="navigation">
+                    <button class="btn btn-secondary" id="prev-btn" onclick="previousQuestion()" disabled>前の問題</button>
+                    <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()" disabled>次の問題</button>
+                </div>
+            </div>
+
+            <div id="results-section" class="hidden">
+                <div class="results-container">
+                    <h2 class="results-title">診断結果</h2>
+                    
+                    <div class="score-display">
+                        <div class="score-card">
+                            <h3>正答数</h3>
+                            <div class="score-value" id="correct-score">0</div>
+                            <div class="score-subtitle">/ 10 問</div>
+                        </div>
+                        <div class="score-card">
+                            <h3>応用力レベル</h3>
+                            <div class="score-value" id="percentage">0%</div>
+                            <div class="score-subtitle">Professional Score</div>
+                        </div>
+                    </div>
+
+                    <div class="competency-analysis" id="competency-analysis">
+                        <!-- Analysis will be populated here -->
+                    </div>
+
+                    <div class="detailed-results">
+                        <h3 style="text-align: center; margin-bottom: 30px; color: #2c3e50;">詳細分析</h3>
+                        <div id="question-analyses">
+                            <!-- Detailed analyses will be populated here -->
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 40px;">
+                        <button class="btn btn-primary" onclick="restartAssessment()">再度診断する</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                id: 1,
+                text: "あなたの部署が、競合他社とのM&Aにより吸収されることになりました。組織文化や評価制度が大きく変わる中、多くの同僚がキャリアへの不安を口にしています。この状況で、最も高い心理的資本を発揮している人材の行動はどれですか？",
+                options: [
+                    "A) 変化に対して感傷的にならず、淡々と与えられた業務をこなし、新しい環境に慣れるのを待つ。",
+                    "B) 「これはチャンスだ」と公言し、新しい組織の良い面だけを探して、周囲の不安を払拭しようと努める。",
+                    "C) 統合後の新組織が目指す方向性をいち早く理解し、自身のスキルセットをどう貢献させられるかを分析。不足分を補う学習計画を立て、キーパーソンに自らを売り込む。",
+                    "D) 旧組織のやり方の優位性を主張し、安易な変化に抵抗することで、既存の価値を守ろうとする。"
+                ],
+                correct: 2,
+                rationales: [
+                    "受動的な適応であり、逆境を乗り越えるレジリエンスの一面は見られますが、主体的な成長への意志が欠けています。",
+                    "根拠の薄い楽観性は、現実逃避と捉えられる可能性があります。現実的な課題認識がなければ、効果的な行動には繋がりません。",
+                    "逆境から成長しようとするレジリエンス、新しい環境での成功を信じる楽観性、具体的な貢献経路を描く希望、そしてそれを実行できるという自己効力感が統合された、最も望ましい行動です。",
+                    "変化への抵抗であり、適応力が低く、心理的資本が高い状態とは言えません。"
+                ],
+                hint: "最も主体的かつ建設的に、未来への道を切り拓こうとしている選択肢はどれでしょう。",
+                category: "統合的活用"
+            },
+            {
+                id: 2,
+                text: "長期間にわたり、個人の努力ではどうにもならないシステム上の問題で成果が上がらない状況が続いた結果、有能な社員が「何をしても無駄だ」と感じ、次第に無気力になってしまいました。この状態を説明する心理学の概念と、HEROモデルの観点から最も欠如している要素の組み合わせとして、最も適切なものはどれですか？",
+                options: [
+                    "A) 燃え尽き症候群（バーンアウト）／主にレジリエンスの欠如",
+                    "B) 認知的不協和／主に楽観性の欠如",
+                    "C) 自己成就予言／主に自己効力感の欠如",
+                    "D) 学習性無力感／希望（特に経路設定力）と自己効力感の著しい欠如"
+                ],
+                correct: 3,
+                rationales: [
+                    "燃え尽き症候群は近い概念ですが、根本原因は「何をしても無駄」という学習された無力感にあります。また、複数の要素が複合的に欠如しています。",
+                    "認知的不協和は、自身の信念と行動の間に矛盾が生じた際の不快感を指すため、このシナリオには直接当てはまりません。",
+                    "「どうせ失敗する」という予言が実現する側面はありますが、根本的な原因はコントロール不能な状況に置かれた経験にあります。",
+                    "コントロール不能な状況を経験することで「何をしても無駄だ」と学習してしまう状態が学習性無力感です。これは、成功への道筋を描けず（希望の欠如）、課題を遂行できる自信を失った（自己効力感の欠如）状態と言えます。"
+                ],
+                hint: "努力と結果が結びつかない経験から何を「学習」してしまったのかがポイントです。",
+                category: "理論的理解"
+            },
+            {
+                id: 3,
+                text: "「チームが一体となって困難な目標を達成できる」という共有された信念を指す「集団的効力感（Collective Efficacy）」は、個人の自己効力感の単純な総和ではありません。この集団的効力感を醸成するために、リーダーとして最も効果的なアプローチはどれですか？",
+                options: [
+                    "A) 各メンバーの個人目標達成度を厳格に管理し、その合計がチーム目標を上回るように計画する。",
+                    "B) チームとして乗り越えた過去の成功体験を「チームの物語」として共有し、困難な場面ではその物語を振り返る機会を作る。",
+                    "C) チームの中で最も自己効力感の高いエース人材をロールモデルとして称賛し、他のメンバーに模倣させる。",
+                    "D) 常に「我々は最高だ」というポジティブな言葉で鼓舞し、チームの一体感を高めるためのイベントを頻繁に開催する。"
+                ],
+                correct: 1,
+                rationales: [
+                    "個人の成果を重視するアプローチであり、チームとしての共有された信念の醸成には直接繋がりません。",
+                    "チーム単位での「達成経験」を共有・再確認することは、集団的効力感を高めるための最も強力な方法の一つです。",
+                    "代理経験は有効ですが、特定のエースに依存すると、他のメンバーの当事者意識やチーム全体としての効力感が育ちにくい可能性があります。",
+                    "言語的説得や感情的喚起も一因ですが、具体的な成功体験に基づかない精神論だけでは、持続的な集団的効力感は醸成されません。"
+                ],
+                hint: "個人の自己効力感と同様に、チームとしての「達成経験」をいかに作るかが鍵です。",
+                category: "チーム応用"
+            },
+            {
+                id: 4,
+                text: "あるプロジェクトが失敗に終わった際の、Aさんの振り返りです。「今回の失敗は、主に市場の想定外の変動（①外的要因）が原因であり、このような特殊な状況はめったにない（②一時的要因）。我々のチームの基本的な進め方の核心部分（③限定的要因）は間違っていなかったはずだ」。このAさんの「説明スタイル」は、HEROのどの要素と最も強く関連していますか？",
+                options: [
+                    "A) Hope (希望)",
+                    "B) Optimism (楽観性)",
+                    "C) Efficacy (自己効力感)",
+                    "D) Resilience (再起力)"
+                ],
+                correct: 1,
+                rationales: [
+                    "失敗から次の計画を立てる点で希望と関連しますが、この振り返りの核心は「失敗原因の捉え方」そのものにあります。",
+                    "失敗を「外的・一時的・限定的」なものとして捉えるのは、将来へのポジティブな期待を維持するための典型的な「楽観的説明スタイル」です。",
+                    "自分の能力への自信とは直接関連しません。これは失敗という出来事をどう解釈するかのスタイルを問うています。",
+                    "この説明スタイルが再起力（レジリエンス）を支える一因にはなりますが、この「説明スタイル」自体が中核をなすのは楽観性の理論です。"
+                ],
+                hint: "成功や失敗の原因をどのように説明するかは、ある特定の要素の重要な側面です。",
+                category: "理論的理解"
+            },
+            {
+                id: 5,
+                text: "ナシーム・タレブが提唱した「反脆弱性（Antifragility）」は、ストレスや予期せぬ衝撃によって、弱るのではなく逆に強くなる性質を指します。この概念と、心理的資本におけるレジリエンスの「Bouncing Forward」の考え方の関係について、最も的確に説明しているものはどれですか？",
+                options: [
+                    "A) 両者は全く同じ概念であり、心理学と金融工学で異なる用語が使われているに過ぎない。",
+                    "B) 反脆弱性はシステムや物体に関する概念であり、人間の心理状態であるレジリエンスには適用できない。",
+                    "C) 「Bouncing Forward」は、反脆弱性の考え方を個人の心理的成長の文脈で捉えたものと解釈でき、単なる回復（Bouncing Back）を超えて、逆境を成長の糧とする点で共通している。",
+                    "D) レジリエンスが防御的な概念であるのに対し、反脆弱性は攻撃的な概念であり、両者は対立する。"
+                ],
+                correct: 2,
+                rationales: [
+                    "非常に近い概念ですが、反脆弱性はシステムが揺らぎから利益を得る性質をより強調しており、完全な同義ではありません。",
+                    "反脆弱性の概念は、心理的な成長や組織の進化にも応用可能であり、適用できないとするのは不正確です。",
+                    "両者の関係性を的確に捉えています。逆境（ストレス、衝撃）を経験することで、以前よりも優れた状態になるという中核的な思想が共通しています。",
+                    "レジリエンスは単なる防御ではなく、成長の側面を含みます。両者は対立するのではなく、連続性のある概念と捉えることができます。"
+                ],
+                hint: "「Bouncing Forward」が意味する「元に戻る以上の成長」と、衝撃から利益を得る性質の共通点を探してください。",
+                category: "理論的理解"
+            },
+            {
+                id: 6,
+                text: "リーダーが部下に対して「君は必ずこのプロジェクトを成功させられる」と高い期待をかけることで、実際にその部下のパフォーマンスが向上する現象を「ピグマリオン効果」と呼びます。この効果は、リーダーのどの心理的資本が、部下のどの心理的資本に影響を与えるプロセスと解釈できますか？",
+                options: [
+                    "A) リーダーの「希望」が、部下の「希望」に影響する。",
+                    "B) リーダーの「レジリエンス」が、部下の「レジリエンス」に影響する。",
+                    "C) リーダーの「楽観性」が、部下の「楽観性」に影響する。",
+                    "D) リーダーの「楽観性（部下の成功を信じる）」が、部下の「自己効力感（自分はできるという自信）」に影響する。"
+                ],
+                correct: 3,
+                rationales: [
+                    "リーダーの目標設定は部下の希望に影響しますが、ピグマリオン効果の核心は「期待」と「能力への信頼」です。",
+                    "リーダーの逆境への対処法は部下のレジリエンスに影響しますが、ピグマリオン効果のメカニズムとは異なります。",
+                    "リーダーの将来への期待は部下の楽観性に影響しますが、ピグマリオン効果はより「能力の遂行」に焦点を当てています。",
+                    "リーダーからのポジティブな期待（言語的説得）が、部下の「自分ならできる」という自己効力感を高め、実際のパフォーマンス向上に繋がるという、ピグマリオン効果のプロセスを的確に説明しています。"
+                ],
+                hint: "他者からの「期待」が、個人の「能力への自信」にどう働きかけるかを考えてみましょう。",
+                category: "理論的理解"
+            },
+            {
+                id: 7,
+                text: "ある非常に優秀なマネージャーは、目標達成への意欲（Willpower）は極めて高いものの、市場環境の変化が激しい新規事業において、チームを率いて具体的な戦略を次々と打ち出すことに苦労しています。結果として、チームは情熱を持ちながらも空回りしている状態です。このマネージャーに最も欠けている心理的資本の要素は何ですか？",
+                options: [
+                    "A) Efficacy (自己効力感)",
+                    "B) HopeにおけるWaypower (経路設定力)",
+                    "C) Resilience (再起力)",
+                    "D) Optimism (楽観性)"
+                ],
+                correct: 1,
+                rationales: [
+                    "個人の業務遂行能力への自信ではなく、チームを導くための「具体的な道筋」を生み出す能力が問われています。",
+                    "目標達成への意欲（Willpower）は高いものの、具体的な方法論や代替案（Waypower）を生み出す点で困難を抱えている状況を的確に示しています。",
+                    "失敗からの回復力というよりは、そもそも成功への道筋を描く創造力が課題となっています。",
+                    "将来を悲観しているわけではなく、具体的な「どうやるか」が見いだせない状況です。"
+                ],
+                hint: "「希望」は2つの要素から構成されます。意欲はあっても、方法論が見いだせないのはどちらの欠如でしょう。",
+                category: "要素分析"
+            },
+            {
+                id: 8,
+                text: "近年の研究で、ストレスに対する個人の「マインドセット」が重要視されています。高いレジリエンスを持つ人材が、困難な課題に直面した際に抱きがちな「ストレスに対するマインドセット」として、最も適切なものはどれですか？",
+                options: [
+                    "A) 「ストレスは有害であり、可能な限り回避すべきだ」",
+                    "B) 「ストレスを感じるのは、自分が精神的に弱い証拠だ」",
+                    "C) 「ストレスは、重要な物事に取り組んでいる証拠であり、エネルギーと集中力を高める機会になる」",
+                    "D) 「ストレスは無視するのが一番だ。考えなければ存在しないのと同じだ」"
+                ],
+                correct: 2,
+                rationales: [
+                    "これはストレスを脅威と捉えるマインドセットであり、パフォーマンス低下に繋がりやすいとされています。",
+                    "ストレスを個人の弱さと結びつけるのは、自己肯定感を下げ、レジリエンスを損なう考え方です。",
+                    "これは「ストレスは成長を促す」というマインドセットです。ストレス反応をパフォーマンス向上のための資源と捉えることで、実際に生産性が高まることが示唆されています。",
+                    "ストレスの否認や抑圧は、長期的には心身の健康を害する可能性があり、建設的な対処法とは言えません。"
+                ],
+                hint: "ストレスを「脅威」と捉えるか、それとも「挑戦への反応」と捉えるか。",
+                category: "実践的応用"
+            },
+            {
+                id: 9,
+                text: "Google社の研究でも有名になった「心理的安全性（Psychological Safety）」は、チームのパフォーマンスを高める重要な土台とされます。心理的資本（PsyCap）と心理的安全性の関係について、最も適切な説明はどれですか？",
+                options: [
+                    "A) 心理的資本が高い個人が集まれば、自然と心理的安全性の高いチームが形成される。",
+                    "B) 心理的安全性は心理的資本の構成要素の一つである。",
+                    "C) 心理的安全性が高い環境は、メンバーが失敗を恐れず挑戦し、対人リスクを取ることを可能にするため、チーム全体の心理的資本（特に自己効力感やレジリエンス）を育む土壌となる。",
+                    "D) 両者はよく似た概念だが、心理的安全性は感情面に、心理的資本は行動面に焦点を当てている点で異なる。"
+                ],
+                correct: 2,
+                rationales: [
+                    "個人の特性だけでなく、リーダーの言動やチームの規範が心理的安全性を左右するため、必ずしも自然には形成されません。",
+                    "心理的安全性は個人の心理状態ではなく「チームの風土」を指す概念であり、PsyCapの構成要素ではありません。",
+                    "心理的安全性を「土壌」、心理的資本を「育つ植物」と捉えるこの関係性は、多くの研究で支持されています。安全な環境が、HEROの各要素を発揮・向上させる機会を提供します。",
+                    "両者とも感情・認知・行動の全ての側面を含んでおり、このような単純な二元論で分けることはできません。"
+                ],
+                hint: "「チームの風土」が、「個人の心理状態」にどのような影響を与えるかを考えてみましょう。",
+                category: "組織応用"
+            },
+            {
+                id: 10,
+                text: "心理的資本は、才能や気質のような固定的（Trait-like）な特性とは異なり、開発可能（State-like）な状態であるとされます。この「State-like」という特性が、人材開発や組織変革において持つ最も重要な示唆は何ですか？",
+                options: [
+                    "A) 採用時に心理的資本が高い人材を見抜くことが、組織パフォーマンス向上の唯一の方法である。",
+                    "B) 組織は、研修やコーチング、意図的な経験設計（PsyCap Intervention）を通じて、全従業員の心理的資本を後天的に向上させることができる。",
+                    "C) 個人の心理的資本は日によって大きく変動するため、一貫したパフォーマンスは期待できない。",
+                    "D) 心理的資本は状況に依存するため、個人のキャリアを通じて維持・向上させることは困難である。"
+                ],
+                correct: 1,
+                rationales: [
+                    "これは「Trait-like（固定的）」な特性と見なす考え方であり、「State-like」の示唆とは逆です。",
+                    "「State-like」であるからこそ、後天的な介入による開発が可能である、という点が最も重要な実践的示唆です。",
+                    "「State-like」は変動可能性を意味しますが、開発によってそのベースラインを高めることが可能です。パフォーマンスが期待できない、というのは言い過ぎです。",
+                    "状況に依存する側面はありますが、開発可能であるため、意識的な努力によって維持・向上させることは十分に可能です。"
+                ],
+                hint: "「開発可能」であるという事実が、企業や個人にとってどのような「可能性」を意味するでしょうか",
+                category: "組織応用"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = [];
+        let showingHints = [];
+
+        function startAssessment() {
+            document.getElementById('intro-section').classList.add('hidden');
+            document.getElementById('assessment-section').classList.remove('hidden');
+            showQuestion(0);
+        }
+
+        function showQuestion(questionIndex) {
+            const question = questions[questionIndex];
+            const container = document.getElementById('question-container');
+            
+            container.innerHTML = `
+                <div class="question-number">${question.id}</div>
+                <div class="question-text">${question.text}</div>
+                <div class="options">
+                    ${question.options.map((option, index) => `
+                        <div class="option" onclick="selectOption(${index})">
+                            <input type="radio" name="question${questionIndex}" value="${index}" id="option${index}">
+                            <label for="option${index}">
+                                <div class="option-label">${option}</div>
+                            </label>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="hint-container">
+                    <button class="hint-toggle" onclick="toggleHint(${questionIndex})">💡 ヒントを見る</button>
+                    <div class="hint-content" id="hint-${questionIndex}">
+                        ${question.hint}
+                    </div>
+                </div>
+            `;
+
+            // Update progress
+            document.getElementById('current-question').textContent = questionIndex + 1;
+            document.getElementById('progress-bar').style.width = `${((questionIndex + 1) / questions.length) * 100}%`;
+
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = questionIndex === 0;
+            document.getElementById('next-btn').disabled = true;
+            
+            if (questionIndex === questions.length - 1) {
+                document.getElementById('next-btn').textContent = '結果を見る';
+            } else {
+                document.getElementById('next-btn').textContent = '次の問題';
+            }
+
+            // Restore previous answer if exists
+            if (answers[questionIndex] !== undefined) {
+                selectOption(answers[questionIndex], false);
+            }
+
+            // Restore hint visibility
+            if (showingHints[questionIndex]) {
+                document.getElementById(`hint-${questionIndex}`).classList.add('show');
+            }
+        }
+
+        function toggleHint(questionIndex) {
+            const hintContent = document.getElementById(`hint-${questionIndex}`);
+            hintContent.classList.toggle('show');
+            showingHints[questionIndex] = hintContent.classList.contains('show');
+        }
+
+        function selectOption(optionIndex, updateAnswer = true) {
+            // Remove previous selection
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selection to clicked option
+            const selectedOption = document.querySelectorAll('.option')[optionIndex];
+            selectedOption.classList.add('selected');
+            selectedOption.querySelector('input').checked = true;
+            
+            if (updateAnswer) {
+                answers[currentQuestion] = optionIndex;
+            }
+            
+            // Enable next button
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        }
+
+        function showResults() {
+            document.getElementById('assessment-section').classList.add('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+
+            // Calculate scores
+            let correctAnswers = 0;
+            questions.forEach((question, index) => {
+                if (answers[index] === question.correct) {
+                    correctAnswers++;
+                }
+            });
+
+            const percentage = Math.round((correctAnswers / questions.length) * 100);
+
+            // Display basic scores
+            document.getElementById('correct-score').textContent = correctAnswers;
+            document.getElementById('percentage').textContent = percentage + '%';
+
+            // Generate competency analysis
+            let competencyLevel, levelClass, analysis;
+
+            if (percentage >= 90) {
+                competencyLevel = "Expert Level";
+                levelClass = "level-expert";
+                analysis = `
+                    <div class="level-indicator ${levelClass}">${competencyLevel} (${percentage}%)</div>
+                    <h3>🏆 心理的資本のエキスパートレベル</h3>
+                    <p>あなたは心理的資本の理論と実践の両面において、極めて高度な理解と応用力をお持ちです。複雑なビジネス状況においても、HEROの4要素を統合的に活用し、自身だけでなくチームや組織全体のパフォーマンス向上に大きく貢献できる人材です。</p>
+                    <p><strong>推奨される役割：</strong> 組織変革のリーダー、人材開発の専門家、エグゼクティブコーチ、研修講師など、他者の心理的資本向上を支援するポジションに最適です。</p>
+                `;
+            } else if (percentage >= 70) {
+                competencyLevel = "Advanced Level";
+                levelClass = "level-advanced";
+                analysis = `
+                    <div class="level-indicator ${levelClass}">${competencyLevel} (${percentage}%)</div>
+                    <h3>🚀 上級レベルの応用力</h3>
+                    <p>心理的資本の応用において優秀な理解力を示しています。実務場面での判断力が高く、困難な状況でも適切なアプローチを選択できます。チームリーダーやミドルマネジメントとして、組織の成長に貢献できる人材です。</p>
+                    <p><strong>成長ポイント：</strong> より高度な理論的背景や、組織レベルでの心理的資本向上施策について学習を深めることで、さらなる専門性を獲得できるでしょう。</p>
+                `;
+            } else if (percentage >= 50) {
+                competencyLevel = "Intermediate Level";
+                levelClass = "level-intermediate";
+                analysis = `
+                    <div class="level-indicator ${levelClass}">${competencyLevel} (${percentage}%)</div>
+                    <h3>📈 中級レベル - 発展途上</h3>
+                    <p>心理的資本の基本的な概念は理解していますが、複雑な実務状況への応用にはさらなる学習が必要です。理論と実践の橋渡しを意識的に行うことで、応用力を高めることができるでしょう。</p>
+                    <p><strong>学習提案：</strong> ケーススタディの分析、実際のビジネス場面での心理的資本の観察、メンタリングの機会を通じて実践的な理解を深めることをお勧めします。</p>
+                `;
+            } else {
+                competencyLevel = "Basic Level";
+                levelClass = "level-basic";
+                analysis = `
+                    <div class="level-indicator ${levelClass}">${competencyLevel} (${percentage}%)</div>
+                    <h3>🌱 基礎レベル - 学習機会</h3>
+                    <p>心理的資本の理論的理解を深める大きな成長機会があります。まずは基本的な概念の学習から始め、段階的に応用力を身に着けていくことが重要です。</p>
+                    <p><strong>学習ステップ：</strong> 1) HEROの4要素の基本理解、2) 簡単な実務事例での応用練習、3) 自己観察を通じた体験的学習から始めることをお勧めします。</p>
+                `;
+            }
+
+            document.getElementById('competency-analysis').innerHTML = analysis;
+
+            // Generate detailed question analyses
+            let analysesHTML = '';
+            questions.forEach((question, index) => {
+                const userAnswer = answers[index];
+                const isCorrect = userAnswer === question.correct;
+                const statusClass = isCorrect ? 'correct' : 'incorrect';
+                const statusIcon = isCorrect ? '✅' : '❌';
+                const userAnswerText = question.options[userAnswer] || '未回答';
+                const correctAnswerText = question.options[question.correct];
+
+                analysesHTML += `
+                    <div class="question-analysis ${statusClass}">
+                        <h4>${statusIcon} 問題${question.id} [${question.category}]</h4>
+                        <p><strong>あなたの回答：</strong> ${userAnswerText}</p>
+                        ${!isCorrect ? `<p><strong>正解：</strong> ${correctAnswerText}</p>` : ''}
+                        
+                        <div class="rationale">
+                            <h5>解説</h5>
+                            <p><strong>正解の理由：</strong> ${question.rationales[question.correct]}</p>
+                            ${!isCorrect && userAnswer !== undefined ? `
+                                <p><strong>あなたの選択について：</strong> ${question.rationales[userAnswer]}</p>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('question-analyses').innerHTML = analysesHTML;
+        }
+
+        function restartAssessment() {
+            currentQuestion = 0;
+            answers = [];
+            showingHints = [];
+            document.getElementById('results-section').classList.add('hidden');
+            document.getElementById('intro-section').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
